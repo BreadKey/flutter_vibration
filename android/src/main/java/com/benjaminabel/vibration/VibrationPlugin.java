@@ -1,6 +1,7 @@
 package com.benjaminabel.vibration;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -16,10 +17,12 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class VibrationPlugin implements MethodCallHandler {
     private final Vibrator vibrator;
+    private final AudioManager audioManager;
     private static final String CHANNEL = "vibration";
 
     private VibrationPlugin(Registrar registrar) {
         this.vibrator = (Vibrator) registrar.context().getSystemService(Context.VIBRATOR_SERVICE);
+        this.audioManager = (AudioManager) registrar.context().getSystemService(Context.AUDIO_SERVICE);
     }
 
     public static void registerWith(Registrar registrar) {
@@ -29,7 +32,7 @@ public class VibrationPlugin implements MethodCallHandler {
 
     @SuppressWarnings("deprecation")
     private void vibrate(long duration, int amplitude) {
-        if (vibrator.hasVibrator()) {
+        if (canVibrate()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (vibrator.hasAmplitudeControl()) {
                     vibrator.vibrate(VibrationEffect.createOneShot(duration, amplitude), new AudioAttributes.Builder()
@@ -56,7 +59,7 @@ public class VibrationPlugin implements MethodCallHandler {
             patternLong[i] = pattern.get(i).intValue();
         }
 
-        if (vibrator.hasVibrator()) {
+        if (canVibrate()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createWaveform(patternLong, repeat), new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -81,7 +84,7 @@ public class VibrationPlugin implements MethodCallHandler {
             intensitiesArray[i] = intensities.get(i);
         }
 
-        if (vibrator.hasVibrator()) {
+        if (canVibrate()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (vibrator.hasAmplitudeControl()) {
                     vibrator.vibrate(VibrationEffect.createWaveform(patternLong, intensitiesArray, repeat), new AudioAttributes.Builder()
@@ -149,5 +152,9 @@ public class VibrationPlugin implements MethodCallHandler {
             default:
                 result.notImplemented();
         }
+    }
+
+    private Boolean canVibrate() {
+        return vibrator.hasVibrator() && audioManager.getRingerMode() != AudioManager.RINGER_MODE_SILENT;
     }
 }

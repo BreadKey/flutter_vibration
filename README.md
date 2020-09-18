@@ -4,6 +4,8 @@
 
 A plugin for handling Vibration API on iOS and Android devices. [API docs.](https://pub.dartlang.org/documentation/vibration/latest/vibration/Vibration-class.html)
 
+This fork does not allow vibration on **Silent Mode**
+
 ## Getting Started
 
 1. Add `vibration` to the dependencies section of `pubspec.yaml`.

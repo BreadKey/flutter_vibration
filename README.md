@@ -10,7 +10,10 @@ A plugin for handling Vibration API on iOS and Android devices. [API docs.](http
 
     ``` yml
     dependencies:
-      vibration: ^1.4.0
+      vibration:
+        git:
+          url: https://github.com/BreadKey/flutter_vibration.git
+          ref: master
     ```
 
 2. Import package:
